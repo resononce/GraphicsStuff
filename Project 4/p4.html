@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+</style>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+#version 300 es
+in vec4 vPosition;
+in vec3 vNormal;
+in vec4 aColor;
+in vec2 aTexCoord;
+
+uniform mat4 translate;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+
+
+out vec4 tColor;
+out vec4 vColor;
+out vec2 vTexCoord;
+
+void main()
+{
+    // Transform vertex position into eye coordinates
+    vec3 pos = (modelViewMatrix * vPosition).xyz;
+    
+    // Here the light is part of the model
+    vec3 light = (modelViewMatrix * lightPosition).xyz;
+
+    // Normalized vector from pos to light
+    vec3 L = normalize( light - pos );
+
+    // Next two lines compute halfway vector, which is unnecessary in diffuse.
+    vec3 E = normalize( pos );
+    vec3 H = normalize( L + E );
+    
+    vec4 NN = vec4(vNormal,0);
+
+    // Transform vertex normal into eye coordinates
+    vec3 N = normalize( (modelViewMatrix*NN).xyz);
+
+    // Compute terms in the illumination equation
+    vec4 ambient = ambientProduct;
+
+    float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd*diffuseProduct;
+
+    float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+    
+    if( dot(L, N) < 0.0 ) {
+        specular = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+
+    vColor = aColor;
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition * translate;
+    tColor = ambient + diffuse + specular;
+    vTexCoord = aTexCoord;
+    tColor.a = 1.0;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+    #version 300 es
+
+precision mediump float;
+
+in vec4 tColor;
+in vec2 vTexCoord;
+
+out vec4 fColor;
+
+uniform sampler2D uTextureMap;
+
+void
+main()
+{
+    fColor = tColor * texture(uTextureMap, vTexCoord);
+}
+</script>
+
+<script type="text/javascript" src="Common/initShaders.js"></script>
+<script type="text/javascript" src="Common/MV.js"></script>
+<script type="text/javascript" src="models/cube.js"></script>
+<script type="text/javascript" src="models/teapot.js"></script>
+<script type="text/javascript" src="p4.js"></script>
+
+<body>
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+    <img id="texImage" src="mandrill.bmp" hidden></img>
+    
+    <p> </p>
+    <button id="Button1">Increase Near and Far</button>
+    <button id="Button2">Decrease Near and Far</button>
+    <button id="Button3">Increase R</button>
+    <button id="Button4">Decrease R</button>
+
+    <p> </p>
+    <button id="Button5">Increase theta</button>
+    <button id="Button6">Decrease theta</button>
+    <button id="Button7">Increase phi</button>
+    <button id="Button8">Decrease phi</button>
+
+    <p> </p>
+    <button id="Button9">Wider</button>
+    <button id="Button10">Narrower</button>
+    <button id="Button11">Higher</button>
+    <button id="Button12">Shorter</button>
+</body>
+
+</html>

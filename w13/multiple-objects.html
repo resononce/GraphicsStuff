@@ -1,0 +1,81 @@
+<html>
+  
+<script id="vertex-shader1" type="x-shader/x-vertex">
+#version 300 es
+in  vec4 vPosition;
+in  vec4 vColor;
+out vec4 tColor;
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
+
+void main() 
+{    
+	gl_Position = projectionMatrix*modelViewMatrix*vPosition;
+    tColor = vColor;
+} 
+</script>
+
+
+<script id="fragment-shader1" type="x-shader/x-fragment">
+#version 300 es
+precision mediump float;
+in vec4 tColor;  
+out vec4 fColor;
+
+void main()
+{
+    fColor = tColor;
+}
+</script>
+
+<script id="vertex-shader2" type="x-shader/x-vertex">
+#version 300 es
+in  vec4 vPosition;
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
+
+void main() 
+{    
+	gl_Position = projectionMatrix*modelViewMatrix*vPosition;
+} 
+</script>
+
+
+<script id="fragment-shader2" type="x-shader/x-fragment">
+#version 300 es
+precision mediump float;
+out vec4 fColor;
+
+void main()
+{
+    fColor = vec4(0.0, 1.0, 0.0, 1.0);
+}
+</script>
+
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="models/teapot.js"></script> 
+<script type="text/javascript" src="multiple-objects.js"></script>
+
+<body>
+<canvas id="gl-canvas" style="float:left; margin-right: 5px;" width="720" height="720">
+</canvas>
+<p> </p>
+<button id = "Button1">Increase Near and Far</button>
+<button id = "Button2">Decrease Near and Far</button>
+<button id = "Button3">Increase R</button>
+<button id = "Button4">Decrease R</button>
+
+<p> </p>
+<button id = "Button5">Increase theta</button>
+<button id = "Button6">Decrease theta</button>
+<button id = "Button7">Increase phi</button>
+<button id = "Button8">Decrease phi</button>
+<p> </p>
+<button id = "Button9">Wider</button>
+<button id = "Button10">Narrower</button>
+<button id = "Button11">Higher</button>
+<button id = "Button12">Shorter</button>
+<p>In case you don't see the entire object, you may have to play with the Near, Far, and R settings to get the appropriate view volume </p>
+</body>
+</html>
